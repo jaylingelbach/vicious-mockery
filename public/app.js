@@ -108,7 +108,10 @@ const invertBtn = document.getElementById('invert');
 
 function randIndex(max) {
   const a = new Uint32Array(1);
-  crypto.getRandomValues(a);
+  const range = Math.floor(0xFFFFFFFF / max) * max;
+  do {
+    crypto.getRandomValues(a);
+  } while (a[0] >= range);
   return a[0] % max;
 }
 
@@ -127,7 +130,10 @@ function newInsult() {
   if (fromHash) textEl.textContent = fromHash;
   else {
     const idx = localStorage.getItem('lastIndex');
-    if (idx !== null) textEl.textContent = INSULTS[Number(idx)];
+       const numIdx = Number(idx);
+    if (idx !== null && !isNaN(numIdx) && numIdx >= 0 && numIdx < INSULTS.length) {
+      textEl.textContent = INSULTS[numIdx];
+    }
   }
 })();
 
@@ -138,7 +144,12 @@ copyBtn.addEventListener('click', async () => {
     const old = copyBtn.textContent;
     copyBtn.textContent = "✅ Copied";
     setTimeout(() => (copyBtn.textContent = old), 900);
-  } catch {}
+    } catch (err) {
+    const old = copyBtn.textContent;
+    copyBtn.textContent = "❌ Failed";
+    setTimeout(() => (copyBtn.textContent = old), 900);
+    console.error('Copy failed:', err);
+  }
 });
 (function initTheme() {
   const saved = localStorage.getItem("theme"); // 'dark' | 'light' | null
