@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vicious Mockery</title>
+    <style>
+      :root {
+        --border: 4px;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          'Helvetica Neue', Arial;
+        background: #fff;
+        color: #111;
+      }
+      .wrap {
+        min-height: 100%;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .card {
+        width: min(720px, 92vw);
+        border: var(--border) solid #000;
+        padding: 24px;
+      }
+      h1 {
+        margin: 0 0 12px 0;
+        font-size: 20px;
+      }
+      #insult {
+        font-size: 28px;
+        line-height: 1.25;
+        margin: 12px 0 20px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        border: var(--border) solid #000;
+        background: #f6f6f6;
+        padding: 10px 14px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .muted {
+        font-size: 12px;
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>Vicious Mockery — Insult Generator</h1>
+        <div id="insult" aria-live="polite">
+          Press the button to conjure an insult.
+        </div>
+        <div class="row">
+          <button id="new">🎲 New Insult</button>
+          <button id="copy">📋 Copy</button>
+          <button id="invert">🌓 Invert</button>
+        </div>
+        <p class="muted">
+          Tip: Works offline. Insults are PG-13 and avoid targeting protected
+          classes.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Keep these playful and non-targeted (no slurs, no protected classes)
+      const INSULTS = [
+        'Your wit hits like a blunt spoon.',
+        "I've seen goblins with better grammar.",
+        'Even your shadow looks disappointed.',
+        'You swing words like noodles at a dragon.',
+        'I’d ask you to think—cruel and unusual, that.',
+        'Your threats are as sharp as a marshmallow.',
+        'A fart in plate mail has more subtlety.',
+        'You have all the menace of lukewarm tea.',
+        'Bards use you as a cautionary chorus.',
+        'You’re proof that noise isn’t music.',
+      ];
+
+      // Persist last shown across refreshes
+      const textEl = document.getElementById('insult');
+      const newBtn = document.getElementById('new');
+      const copyBtn = document.getElementById('copy');
+      const invertBtn = document.getElementById('invert');
+
+      function randIndex(max) {
+        const array = new Uint32Array(1);
+        crypto.getRandomValues(array);
+        return array[0] % max;
+      }
+
+      function newInsult() {
+        let next;
+        const last = localStorage.getItem('lastIndex');
+        do {
+          next = randIndex(INSULTS.length);
+        } while (String(next) === last && INSULTS.length > 1);
+        localStorage.setItem('lastIndex', String(next));
+        const line = INSULTS[next];
+        textEl.textContent = line;
+        // Put into URL hash for easy sharing/bookmarking
+        history.replaceState(null, '', '#' + encodeURIComponent(line));
+      }
+
+      // On load, restore from hash or last selection
+      (function init() {
+        const fromHash = decodeURIComponent((location.hash || '').slice(1));
+        if (fromHash) {
+          textEl.textContent = fromHash;
+        } else {
+          const lastIdx = localStorage.getItem('lastIndex');
+          if (lastIdx !== null) textEl.textContent = INSULTS[Number(lastIdx)];
+        }
+      })();
+
+      newBtn.addEventListener('click', newInsult);
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(textEl.textContent || '');
+          copyBtn.textContent = '✅ Copied';
+          setTimeout(() => (copyBtn.textContent = '📋 Copy'), 1000);
+        } catch {}
+      });
+
+      invertBtn.addEventListener('click', () => {
+        document.body.style.background = document.body.style.background
+          ? ''
+          : '#111';
+        document.body.style.color = document.body.style.color ? '' : '#fff';
+        document.querySelectorAll('.card, button').forEach((el) => {
+          if (el.style.borderColor) {
+            el.style.borderColor = '';
+          } else {
+            el.style.borderColor = '#fff';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
