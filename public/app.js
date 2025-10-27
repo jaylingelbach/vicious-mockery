@@ -106,6 +106,12 @@ const newBtn = document.getElementById('new');
 const copyBtn = document.getElementById('copy');
 const invertBtn = document.getElementById('invert');
 
+/**
+ * Produce a cryptographically secure, unbiased integer between 0 and max - 1.
+ *
+ * @param {number} max - Upper bound (exclusive). Must be a positive integer greater than 0.
+ * @returns {number} An integer in the range 0 through max - 1 (inclusive).
+ */
 function randIndex(max) {
   const a = new Uint32Array(1);
   const range = Math.floor(0xFFFFFFFF / max) * max;
@@ -115,6 +121,13 @@ function randIndex(max) {
   return a[0] % max;
 }
 
+/**
+ * Selects and displays a new insult, ensuring it differs from the previously shown one when possible.
+ *
+ * Chooses an insult index, updates localStorage key "lastIndex" with the selected index,
+ * sets the page's insult element text content to the chosen line, and replaces the URL hash
+ * with the encoded insult text.
+ */
 function newInsult() {
   let next;
   const last = localStorage.getItem('lastIndex');
