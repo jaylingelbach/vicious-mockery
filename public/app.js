@@ -1,140 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>Vicious Mockery — Insult Generator</title>
-    <style>
-      /* --- Responsive, touch-friendly, e-ink friendly --- */
-      :root {
-        --border: 4px;
-        --radius: 16px;
-        --pad: clamp(16px, 3vw, 28px);
-        --maxw: min(860px, 92vw);
-        --h1: clamp(18px, 3.4vw, 22px);
-        --body: clamp(16px, 2.6vw, 20px);
-        --insult: clamp(22px, 4.8vw, 32px);
-        --gap: clamp(10px, 2.8vw, 14px);
-      }
-      @media (max-width: 420px) {
-        :root {
-          --border: 3px;
-          --radius: 14px;
-        }
-      }
-
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
-        background: #fff;
-        color: #111;
-        font-size: var(--body);
-        -webkit-text-size-adjust: 100%;
-      }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: #111;
-          color: #fff;
-        }
-        .card,
-        button {
-          border-color: #fff;
-        }
-        button {
-          background: #1c1c1c;
-        }
-      }
-
-      .wrap {
-        min-height: 100%;
-        display: grid;
-        place-items: center;
-        padding: calc(env(safe-area-inset-top, 0) + var(--pad)) var(--pad)
-          calc(env(safe-area-inset-bottom, 0) + var(--pad));
-      }
-      .card {
-        width: var(--maxw);
-        border: var(--border) solid #000;
-        border-radius: var(--radius);
-        padding: var(--pad);
-        box-sizing: border-box;
-      }
-      h1 {
-        margin: 0 0 0.5rem 0;
-        font-size: var(--h1);
-        line-height: 1.2;
-      }
-      #insult {
-        font-size: var(--insult);
-        line-height: 1.25;
-        margin: 0.6rem 0 1rem;
-        word-break: normal;
-        overflow-wrap: anywhere; /* avoid overflow on tiny screens */
-      }
-      .controls {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: var(--gap);
-        margin-bottom: 0.5rem;
-      }
-      button {
-        border: var(--border) solid #000;
-        background: #f6f6f6;
-        padding: 12px 14px;
-        min-height: 48px; /* big tap target */
-        font-size: 1rem;
-        cursor: pointer;
-        border-radius: 12px;
-        touch-action: manipulation;
-      }
-      button:active {
-        transform: translateY(1px);
-      }
-      .muted {
-        font-size: 0.85em;
-        opacity: 0.75;
-      }
-
-      /* Larger screens: keep it airy */
-      @media (min-width: 900px) {
-        .card {
-          padding: calc(var(--pad) * 1.2);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="card" role="region" aria-label="Insult generator">
-        <h1>Vicious Mockery — Insult Generator</h1>
-        <div id="insult" aria-live="polite">Press “New Insult” to begin.</div>
-        <div class="controls">
-          <button id="new" aria-label="Generate a new insult">
-            🎲 New Insult
-          </button>
-          <button id="copy" aria-label="Copy insult to clipboard">
-            📋 Copy
-          </button>
-          <button id="invert" aria-label="Invert colors for e-ink or dark mode">
-            🌓 Invert
-          </button>
-        </div>
-        <p class="muted">
-          Tip: Works offline; the text stays on screen even if the device
-          sleeps.
-        </p>
-      </div>
-    </div>
-
-    <script>
-      // Your full list, numbers removed (exact text preserved)
-      const INSULTS = [
+const INSULTS = [
         'What smells worse than a goblin? Oh yeah, you!',
         'Your mother takes up more tiles than a gelatinous cube!',
         "You're going to make an excellent belt!",
@@ -237,74 +101,56 @@
         "Wait, so you're the manifestation of a divine being of supreme power and malevolence, and you chose that face? Do they even have mirrors on your plane of existence!",
       ];
 
-      const textEl = document.getElementById('insult');
-      const newBtn = document.getElementById('new');
-      const copyBtn = document.getElementById('copy');
-      const invertBtn = document.getElementById('invert');
+const textEl = document.getElementById('insult');
+const newBtn = document.getElementById('new');
+const copyBtn = document.getElementById('copy');
+const invertBtn = document.getElementById('invert');
 
-      function randIndex(max) {
-        const array = new Uint32Array(1);
-        crypto.getRandomValues(array);
-        return array[0] % max;
-      }
+function randIndex(max) {
+  const a = new Uint32Array(1);
+  crypto.getRandomValues(a);
+  return a[0] % max;
+}
 
-      function newInsult() {
-        let next;
-        const last = localStorage.getItem('lastIndex');
-        do {
-          next = randIndex(INSULTS.length);
-        } while (String(next) === last && INSULTS.length > 1);
-        localStorage.setItem('lastIndex', String(next));
-        const line = INSULTS[next];
-        textEl.textContent = line;
-        history.replaceState(null, '', '#' + encodeURIComponent(line));
-      }
+function newInsult() {
+  let next;
+  const last = localStorage.getItem('lastIndex');
+  do { next = randIndex(INSULTS.length); } while (String(next) === last && INSULTS.length > 1);
+  localStorage.setItem('lastIndex', String(next));
+  const line = INSULTS[next];
+  textEl.textContent = line;
+  history.replaceState(null, "", "#" + encodeURIComponent(line));
+}
 
-      // Restore from URL hash or last shown
-      (function init() {
-        const fromHash = decodeURIComponent((location.hash || '').slice(1));
-        if (fromHash) {
-          textEl.textContent = fromHash;
-        } else {
-          const lastIdx = localStorage.getItem('lastIndex');
-          if (lastIdx !== null) textEl.textContent = INSULTS[Number(lastIdx)];
-        }
-        // Improve tap responsiveness on iOS Safari
-        document.addEventListener('touchstart', () => {}, { passive: true });
-      })();
+(function init() {
+  const fromHash = decodeURIComponent((location.hash || '').slice(1));
+  if (fromHash) textEl.textContent = fromHash;
+  else {
+    const idx = localStorage.getItem('lastIndex');
+    if (idx !== null) textEl.textContent = INSULTS[Number(idx)];
+  }
+})();
 
-      newBtn.addEventListener('click', newInsult);
-      copyBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(textEl.textContent || '');
-          const old = copyBtn.textContent;
-          copyBtn.textContent = '✅ Copied';
-          setTimeout(() => (copyBtn.textContent = old), 900);
-        } catch {}
-      });
-      invertBtn.addEventListener('click', () => {
-        const dark = document.body.dataset.inv === '1';
-        document.body.dataset.inv = dark ? '0' : '1';
-        if (dark) {
-          document.body.style.background = '';
-          document.body.style.color = '';
-          document
-            .querySelectorAll('.card, button')
-            .forEach((el) => (el.style.borderColor = ''));
-          document
-            .querySelectorAll('button')
-            .forEach((el) => (el.style.background = ''));
-        } else {
-          document.body.style.background = '#111';
-          document.body.style.color = '#fff';
-          document
-            .querySelectorAll('.card, button')
-            .forEach((el) => (el.style.borderColor = '#fff'));
-          document
-            .querySelectorAll('button')
-            .forEach((el) => (el.style.background = '#1c1c1c'));
-        }
-      });
-    </script>
-  </body>
-</html>
+newBtn.addEventListener('click', newInsult);
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(textEl.textContent || '');
+    const old = copyBtn.textContent;
+    copyBtn.textContent = "✅ Copied";
+    setTimeout(() => (copyBtn.textContent = old), 900);
+  } catch {}
+});
+(function initTheme() {
+  const saved = localStorage.getItem("theme"); // 'dark' | 'light' | null
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if ((saved && saved === "dark") || (!saved && prefersDark)) {
+    document.documentElement.classList.add("dark");
+  }
+})();
+
+// Invert button toggles the 'dark' class on <html> and saves preference
+invertBtn.addEventListener("click", () => {
+  const root = document.documentElement;
+  const isDark = root.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});
