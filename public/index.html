@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vicious Mockery</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body
+    class="min-h-screen grid place-items-center bg-white text-black dark:bg-black dark:text-white"
+  >
+    <main
+      class="w-[min(720px,92vw)] border-[8px] border-black dark:border-white p-6"
+    >
+      <h1 class="text-2xl mb-3">Vicious Mockery — Insult Generator</h1>
+      <p id="insult" class="text-3xl leading-tight mb-5">
+        Press the button to conjure an insult.
+      </p>
+      <div class="flex gap-3 flex-wrap">
+        <button
+          id="new"
+          class="border-4 border-black dark:border-white px-4 py-2"
+        >
+          🎲 New
+        </button>
+        <button
+          id="copy"
+          class="border-4 border-black dark:border-white px-4 py-2"
+        >
+          📋 Copy
+        </button>
+        <button
+          id="invert"
+          class="border-4 border-black dark:border-white px-4 py-2"
+        >
+          🌓 Invert
+        </button>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
