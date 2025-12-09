@@ -54,7 +54,7 @@ const INSULTS = [
         'When your god put teeth in your mouth, he ruined a perfectly good asshole!',
         'Whomever is willing to have sex with you, is just too lazy to jerk off!',
         "If your brain exploded, it wouldn't even mess up your hair!",
-        "Somewhere, Your depriving a village of it's idiot!",
+        `Somewhere, You're depriving a village of it's idiot!`,
         "I'd like to see things from your point of view, but I can't get my head that far up my arse!",
         "Could you go get your husband, I don't like fighting ugly women!",
         "You call that an attack, I've seen dead kittens hit harder than that!",
